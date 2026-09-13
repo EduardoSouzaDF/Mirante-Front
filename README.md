@@ -90,6 +90,37 @@ src/app/
 └── features/    # telas por funcionalidade (a definir em specs futuras)
 ```
 
+## Responsividade (desktop e mobile)
+
+As telas são construídas para **desktop e mobile**:
+
+- Utilitários de layout do ecossistema Prime (**PrimeFlex** — classes tipo
+  `flex`, `flex-wrap`, `gap-3`) registrados no `angular.json`.
+- Breakpoint mobile: **768px**.
+- No mobile, o **menu lateral vira drawer** (abre pelo botão ☰ na topbar, com
+  overlay; fecha com ✕, clicando fora ou ao navegar).
+- Login e breadcrumb ficam mais compactos; os cards do dashboard empilham
+  ocupando a largura total.
+
+## Validação visual (Playwright)
+
+O projeto usa **@playwright/test** (usando o Chrome instalado via
+`channel: 'chrome'`, sem baixar o Chromium).
+
+```bash
+# 1. Suba o fluxo (em terminais separados):
+cd ../backend && npm run mocks     # mock na 3100 (delay 2s)
+ng serve                           # app na 4200
+
+# 2. Abra o navegador para validar as telas (desktop e mobile):
+npm run e2e:open
+
+# Ou rode o smoke test automatizado:
+npm run e2e
+```
+
+**O PR só é aberto após a validação visual com o Playwright** (ver fluxo SDD).
+
 ## Decisões técnicas
 
 - Angular 17 fixo (stack oficial do projeto — ver `config/project.yaml` no
