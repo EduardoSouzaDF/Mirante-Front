@@ -16,26 +16,27 @@ export interface RangeFieldValue {
     <div class="range-field">
       <label class="range-field__label">{{ label() }}</label>
       <div class="range-field__inputs">
-        <div class="range-field__campo">
-          <span class="range-field__legenda">De</span>
-          <input
-            class="range-field__input"
-            [type]="inputType()"
-            [placeholder]="placeholderDe()"
-            [value]="deExibicao()"
-            (input)="onDe($event)"
-          />
-        </div>
-        <div class="range-field__campo">
-          <span class="range-field__legenda">Até</span>
-          <input
-            class="range-field__input"
-            [type]="inputType()"
-            [placeholder]="placeholderAte()"
-            [value]="ateExibicao()"
-            (input)="onAte($event)"
-          />
-        </div>
+        <input
+          class="range-field__input"
+          [type]="inputType()"
+          [attr.inputmode]="inputMode()"
+          [placeholder]="placeholderDe() || 'De'"
+          [attr.aria-label]="label() + ' - De'"
+          [value]="deExibicao()"
+          (input)="onDe($event)"
+          (click)="abrirSeletor($event)"
+        />
+        <input
+          class="range-field__input"
+          [type]="inputType()"
+          [attr.inputmode]="inputMode()"
+          [attr.min]="type() === 'date' ? deValorData() : null"
+          [placeholder]="placeholderAte() || 'Até'"
+          [attr.aria-label]="label() + ' - Até'"
+          [value]="ateExibicao()"
+          (input)="onAte($event)"
+          (click)="abrirSeletor($event)"
+        />
       </div>
     </div>
   `,
@@ -57,21 +58,9 @@ export interface RangeFieldValue {
       gap: 0.5rem;
     }
 
-    .range-field__campo {
-      display: flex;
-      flex-direction: column;
-      gap: 0.15rem;
+    .range-field__input {
       flex: 1;
       min-width: 0;
-    }
-
-    .range-field__legenda {
-      font-size: 0.7rem;
-      color: var(--agua-500);
-    }
-
-    .range-field__input {
-      width: 100%;
       padding: 0.4rem 0.5rem;
       border: 1px solid var(--surface-100);
       border-radius: 0.375rem;
@@ -100,6 +89,24 @@ export class RangeFieldComponent {
   readonly ateExibicao = signal('');
 
   readonly inputType = () => (this.type() === 'date' ? 'date' : 'text');
+
+  readonly inputMode = () => {
+    if (this.type() === 'currency' || this.type() === 'number') return 'numeric';
+    return null;
+  };
+
+  /** Valor de "De" como string de data (para travar o mínimo do "Até"). */
+  readonly deValorData = () => {
+    const valor = this.deValor();
+    return this.type() === 'date' && valor ? String(valor) : null;
+  };
+
+  abrirSeletor(evento: Event): void {
+    const input = evento.target as HTMLInputElement & { showPicker?: () => void };
+    if (this.type() === 'date') {
+      input.showPicker?.();
+    }
+  }
 
   onDe(evento: Event): void {
     const bruto = (evento.target as HTMLInputElement).value;
