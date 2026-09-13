@@ -1,12 +1,15 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 
+import { BreadcrumbItem } from './core/models/breadcrumb-item.model';
 import { BreadcrumbComponent } from './shared/breadcrumb/breadcrumb.component';
 import { SidebarComponent } from './shared/sidebar/sidebar.component';
 
 /**
  * Layout da área autenticada: sidebar à esquerda + breadcrumb no topo.
  * No mobile (<= 768px) a sidebar vira drawer, aberta pelo botão ☰.
+ * O breadcrumb é montado a partir de `data.breadcrumb` da rota ativa.
  */
 @Component({
   selector: 'app-layout',
@@ -34,7 +37,10 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
           >
             ☰
           </button>
-          <app-breadcrumb />
+          <app-breadcrumb
+            [items]="breadcrumbItems()"
+            (home)="irParaInicio()"
+          />
         </div>
         <main class="layout__content">
           <router-outlet />
@@ -107,7 +113,17 @@ import { SidebarComponent } from './shared/sidebar/sidebar.component';
   `,
 })
 export class LayoutComponent {
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
   readonly menuAberto = signal(false);
+  readonly breadcrumbItems = signal<BreadcrumbItem[]>(this.lerBreadcrumb());
+
+  constructor() {
+    this.router.events
+      .pipe(filter((evento) => evento instanceof NavigationEnd))
+      .subscribe(() => this.breadcrumbItems.set(this.lerBreadcrumb()));
+  }
 
   alternarMenu(): void {
     this.menuAberto.set(!this.menuAberto());
@@ -116,5 +132,17 @@ export class LayoutComponent {
   fecharMenu(): void {
     this.menuAberto.set(false);
   }
-}
 
+  irParaInicio(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  private lerBreadcrumb(): BreadcrumbItem[] {
+    let atual = this.route.firstChild;
+    while (atual?.firstChild) {
+      atual = atual.firstChild;
+    }
+    const label = atual?.snapshot?.data?.['breadcrumb'];
+    return label ? [{ label }] : [];
+  }
+}

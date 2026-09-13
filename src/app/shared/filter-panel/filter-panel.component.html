@@ -1,0 +1,17 @@
+<section class="filter-panel">
+  <button type="button" class="filter-panel__header" (click)="alternar()">
+    <div>
+      <strong class="filter-panel__titulo">{{ titulo() }}</strong>
+      @if (subtitulo()) {
+        <div class="filter-panel__subtitulo">{{ subtitulo() }}</div>
+      }
+    </div>
+    <i class="pi" [class.pi-chevron-up]="expandido()" [class.pi-chevron-down]="!expandido()"></i>
+  </button>
+
+  @if (expandido()) {
+    <div class="filter-panel__body">
+      <ng-content></ng-content>
+    </div>
+  }
+</section>
