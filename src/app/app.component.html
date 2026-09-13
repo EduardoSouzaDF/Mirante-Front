@@ -1,0 +1,39 @@
+<div class="app-shell">
+  <header class="app-header">
+    <span class="app-brand">Mirante</span>
+    <span class="app-header__subtitle">MVP</span>
+  </header>
+
+  <main class="app-content">
+    <p-card header="Base de instalação pronta">
+      <ng-template pTemplate="content">
+        <p class="app-intro">
+          Aplicação Angular 17 configurada com PrimeNG, design tokens
+          verde-petróleo, pipes pt-BR e proxy para o mock server.
+        </p>
+
+        <div class="demo-row">
+          <label for="exemplo" class="demo-label">Campo de exemplo:</label>
+          <input id="exemplo" type="text" pInputText placeholder="Digite algo" />
+        </div>
+
+        <div class="demo-row">
+          <span class="demo-label">Valor formatado (pt-BR):</span>
+          <strong>{{ exemploValor | brl }}</strong>
+        </div>
+
+        <div class="demo-row">
+          <span class="demo-label">Data formatada (pt-BR):</span>
+          <strong>{{ exemploData | dataBr }}</strong>
+        </div>
+
+        <div class="demo-row">
+          <p-button label="Botão primário"></p-button>
+          <p-button label="Botão secundário" severity="secondary"></p-button>
+        </div>
+      </ng-template>
+    </p-card>
+  </main>
+</div>
+
+<router-outlet />

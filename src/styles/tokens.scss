@@ -1,0 +1,28 @@
+// ============================================================
+// Design Tokens — Paleta verde-petróleo do projeto Mirante
+// Derivada das imagens de referência (docs/anexos.jfif e docs/modal.jfif)
+// ============================================================
+:root {
+  // --- Petróleo (tons principais) ---
+  --petroleo-950: #001018;
+  --petroleo-900: #001824;
+  --petroleo-800: #002028;
+  --petroleo-700: #002830; // cor principal (headers, botões)
+  --petroleo-600: #0c343c; // hover / bordas
+  --petroleo-500: #183c44; // superfícies secundárias
+  --petroleo-400: #2c545c; // ícones / elementos desabilitados
+
+  // --- Verde-água (acentos / links / focus) ---
+  --agua-600: #007870;
+  --agua-500: #048074; // acento principal
+  --agua-400: #0f8f80;
+
+  // --- Superfícies ---
+  --surface-0: #ffffff;
+  --surface-50: #f0f0f0;
+  --surface-100: #e0e0e0;
+
+  // --- Texto ---
+  --texto-primario: #002830;
+  --texto-secundario: #707070;
+}
