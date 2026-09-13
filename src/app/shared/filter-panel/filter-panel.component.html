@@ -1,0 +1,71 @@
+<section class="filter-panel">
+  <button type="button" class="filter-panel__header" (click)="alternar()">
+    <div>
+      <strong class="filter-panel__titulo">Filtros</strong>
+      <div class="filter-panel__subtitulo">
+        PESQUISAR LOTE OUTROS CRÉDITOS/DÉBITOS
+      </div>
+    </div>
+    <i class="pi" [class.pi-chevron-up]="expandido()" [class.pi-chevron-down]="!expandido()"></i>
+  </button>
+
+  @if (expandido()) {
+    <div class="filter-panel__body">
+      <div class="filter-panel__grid">
+        <div class="filter-panel__campo">
+          <label class="filter-panel__label">Instituição Resp.</label>
+          <select class="filter-panel__select" [(ngModel)]="instituicaoRespId">
+            <option value="">Todas</option>
+            @for (item of opcoes()?.instituicoesResponsaveis; track item.id) {
+              <option [value]="item.id">{{ item.nome }}</option>
+            }
+          </select>
+        </div>
+
+        <app-range-field
+          label="ID Lote"
+          type="number"
+          (change)="onIdChange($event)"
+        />
+
+        <div class="filter-panel__campo">
+          <label class="filter-panel__label">Instituição</label>
+          <select class="filter-panel__select" [(ngModel)]="instituicaoId">
+            <option value="">Todas</option>
+            @for (item of opcoes()?.instituicoes; track item.id) {
+              <option [value]="item.id">{{ item.nome }}</option>
+            }
+          </select>
+        </div>
+
+        <app-range-field
+          label="Valor Lote"
+          type="currency"
+          (change)="onValorChange($event)"
+        />
+
+        <div class="filter-panel__campo">
+          <label class="filter-panel__label">Situação Lote</label>
+          <select class="filter-panel__select" [(ngModel)]="situacao">
+            <option value="Todas">Todas</option>
+            @for (item of opcoes()?.situacoes; track item) {
+              <option [value]="item">{{ item }}</option>
+            }
+          </select>
+        </div>
+
+        <app-range-field
+          label="Data Entrada"
+          type="date"
+          (change)="onDataChange($event)"
+        />
+      </div>
+
+      <div class="filter-panel__acoes">
+        <button type="button" class="filter-panel__pesquisar" (click)="onPesquisar()">
+          Pesquisar
+        </button>
+      </div>
+    </div>
+  }
+</section>

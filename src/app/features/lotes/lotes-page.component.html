@@ -1,0 +1,24 @@
+<section class="lotes-page">
+  <h1 class="lotes-page__titulo">Outros Créditos/Débitos</h1>
+
+  <app-filter-panel [opcoes]="filtrosOptions()" (pesquisar)="onPesquisar($event)" />
+
+  <app-lote-actions [selectionMode]="selectionMode()" (action)="onAction($event)" />
+
+  <app-lote-table
+    [lotes]="lotes()"
+    [total]="total()"
+    [page]="page()"
+    [size]="size()"
+    [selectedIds]="selectedIds()"
+    (selectionChange)="facade.setSelecionados($event)"
+    (pageChange)="facade.irParaPagina($event)"
+  />
+
+  <app-lote-detail-dialog
+    [visible]="modalVisivel()"
+    [loteId]="loteSelecionadoId()"
+    (closed)="onFecharModal()"
+    (action)="onModalAction($event)"
+  />
+</section>

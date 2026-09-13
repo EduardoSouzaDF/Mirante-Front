@@ -1,0 +1,91 @@
+.filter-panel {
+  background: var(--surface-0);
+  border: 1px solid var(--surface-100);
+  border-radius: 0.5rem;
+}
+
+.filter-panel__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--texto-primario);
+}
+
+.filter-panel__titulo {
+  font-size: 0.95rem;
+}
+
+.filter-panel__subtitulo {
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  color: var(--texto-secundario);
+  margin-top: 0.15rem;
+}
+
+.filter-panel__body {
+  padding: 0 1.25rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.filter-panel__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+}
+
+.filter-panel__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.filter-panel__label {
+  font-size: 0.8rem;
+  color: var(--texto-secundario);
+}
+
+.filter-panel__select {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--surface-100);
+  border-radius: 0.375rem;
+  font-size: 0.85rem;
+  color: var(--texto-primario);
+  background: var(--surface-0);
+}
+
+.filter-panel__acoes {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Botão Pesquisar com espaçamento maior que os demais campos, conforme protótipo */
+.filter-panel__pesquisar {
+  padding: 0.75rem 2.5rem;
+  background: var(--agua-500);
+  color: var(--surface-0);
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.filter-panel__pesquisar:hover {
+  background: var(--agua-600);
+}
+
+@media (max-width: 768px) {
+  .filter-panel__grid {
+    grid-template-columns: 1fr;
+  }
+}

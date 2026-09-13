@@ -1,0 +1,12 @@
+.lotes-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lotes-page__titulo {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--texto-primario);
+}

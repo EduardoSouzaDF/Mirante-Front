@@ -1,0 +1,41 @@
+@if (visible()) {
+  <div class="lote-dialog__overlay" (click)="fechar()" aria-hidden="true"></div>
+  <div class="lote-dialog" role="dialog" aria-modal="true" aria-label="Detalhe do lote">
+    <div class="lote-dialog__header">
+      <strong>Lote {{ lote()?.id }}</strong>
+      <button type="button" class="lote-dialog__fechar" (click)="fechar()" aria-label="Fechar">
+        ✕
+      </button>
+    </div>
+
+    @if (carregando()) {
+      <p class="lote-dialog__carregando">Carregando…</p>
+    }
+    @if (!carregando() && lote(); as l) {
+      <div class="lote-dialog__grid">
+        <div><span class="lote-dialog__label">Instituição Resp.</span>{{ l.resp?.nome ?? '-' }}</div>
+        <div><span class="lote-dialog__label">Instituição</span>{{ l.instituicao?.nome ?? '-' }}</div>
+        <div><span class="lote-dialog__label">Valor</span>{{ l.valor | brl }}</div>
+        <div><span class="lote-dialog__label">Quant. Lançamentos</span>{{ l.quantidadeLancamentos }}</div>
+        <div><span class="lote-dialog__label">Usuário Registro</span>{{ l.usuarioRegistro?.nome ?? '-' }}</div>
+        <div><span class="lote-dialog__label">Usuário Aprovação</span>{{ l.usuarioAprovacao?.nome ?? '-' }}</div>
+        <div><span class="lote-dialog__label">Situação</span>{{ l.situacao }}</div>
+        <div><span class="lote-dialog__label">Data Entrada</span>{{ l.dataEntrada | dataBr }}</div>
+      </div>
+
+      <div class="lote-dialog__lancamentos">
+        <span class="lote-dialog__label">Lançamentos</span>
+        <ul>
+          @for (lanc of l.lancamentos; track lanc.id) {
+            <li>{{ lanc.descricao }} — {{ lanc.valor | brl }}</li>
+          }
+        </ul>
+      </div>
+
+      <div class="lote-dialog__acoes">
+        <button type="button" (click)="action.emit('alterar')">Alterar</button>
+        <button type="button" (click)="action.emit('justificativa')">Visualizar Justificativa</button>
+      </div>
+    }
+  </div>
+}

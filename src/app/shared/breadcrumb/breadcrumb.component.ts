@@ -1,20 +1,29 @@
-import { Component, inject, signal } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
-import { filter } from 'rxjs';
+import { Component, input, output } from '@angular/core';
+
+import { BreadcrumbItem } from '../../core/models/breadcrumb-item.model';
 
 /**
- * Breadcrumbs derivados da URL atual (ex.: Início / Dashboard).
- * Usa a nova sintaxe de control flow (@for) do Angular 17.
+ * Breadcrumb reutilizável, recebido por @Input — quem sabe a rota atual
+ * (o LayoutComponent, via `data.breadcrumb` de cada rota) decide os itens.
  */
 @Component({
   selector: 'app-breadcrumb',
   standalone: true,
   template: `
     <nav class="breadcrumb" aria-label="Navegação de localização">
-      <span class="breadcrumb__item">Início</span>
-      @for (item of itens(); track item) {
-        <span class="breadcrumb__sep" aria-hidden="true">/</span>
-        <span class="breadcrumb__item">{{ item }}</span>
+      @if (showHome()) {
+        <a class="breadcrumb__item breadcrumb__item--link" (click)="home.emit()">{{
+          homeLabel()
+        }}</a>
+        @if (items().length) {
+          <span class="breadcrumb__sep" aria-hidden="true">/</span>
+        }
+      }
+      @for (item of items(); track item.label; let last = $last) {
+        <span class="breadcrumb__item">{{ item.label }}</span>
+        @if (!last) {
+          <span class="breadcrumb__sep" aria-hidden="true">/</span>
+        }
       }
     </nav>
   `,
@@ -34,6 +43,15 @@ import { filter } from 'rxjs';
       color: var(--texto-secundario);
     }
 
+    .breadcrumb__item--link {
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .breadcrumb__item--link:hover {
+      color: var(--texto-primario);
+    }
+
     .breadcrumb__sep {
       color: var(--texto-secundario);
       opacity: 0.6;
@@ -49,22 +67,10 @@ import { filter } from 'rxjs';
   `,
 })
 export class BreadcrumbComponent {
-  private readonly router = inject(Router);
+  readonly items = input<BreadcrumbItem[]>([]);
+  readonly homeLabel = input('Início');
+  readonly showHome = input(true);
 
-  readonly itens = signal<string[]>(this.extrair(this.router.url));
-
-  constructor() {
-    this.router.events
-      .pipe(filter((evento) => evento instanceof NavigationEnd))
-      .subscribe(() => {
-        this.itens.set(this.extrair(this.router.url));
-      });
-  }
-
-  private extrair(url: string): string[] {
-    const segmentos = url.split('?')[0].split('/').filter(Boolean);
-    return segmentos.map(
-      (segmento) => segmento.charAt(0).toUpperCase() + segmento.slice(1),
-    );
-  }
+  readonly home = output<void>();
+  readonly itemClick = output<BreadcrumbItem>();
 }
