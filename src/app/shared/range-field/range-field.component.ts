@@ -20,6 +20,8 @@ export interface RangeFieldValue {
           class="range-field__input"
           [type]="inputType()"
           [attr.inputmode]="inputMode()"
+          [attr.min]="deMin()"
+          [attr.step]="type() === 'number' ? 1 : null"
           [placeholder]="placeholderDe() || 'De'"
           [attr.aria-label]="label() + ' - De'"
           [value]="deExibicao()"
@@ -30,7 +32,8 @@ export interface RangeFieldValue {
           class="range-field__input"
           [type]="inputType()"
           [attr.inputmode]="inputMode()"
-          [attr.min]="type() === 'date' ? deValorData() : null"
+          [attr.min]="ateMin()"
+          [attr.step]="type() === 'number' ? 1 : null"
           [placeholder]="placeholderAte() || 'Até'"
           [attr.aria-label]="label() + ' - Até'"
           [value]="ateExibicao()"
@@ -88,15 +91,22 @@ export class RangeFieldComponent {
   readonly deExibicao = signal('');
   readonly ateExibicao = signal('');
 
-  readonly inputType = () => (this.type() === 'date' ? 'date' : 'text');
+  readonly inputType = () => {
+    if (this.type() === 'date') return 'date';
+    if (this.type() === 'number') return 'number';
+    return 'text';
+  };
 
   readonly inputMode = () => {
     if (this.type() === 'currency' || this.type() === 'number') return 'numeric';
     return null;
   };
 
-  /** Valor de "De" como string de data (para travar o mínimo do "Até"). */
-  readonly deValorData = () => {
+  /** ID Lote não faz sentido negativo — trava o mínimo em 0 nos dois campos. */
+  readonly deMin = () => (this.type() === 'number' ? 0 : null);
+
+  readonly ateMin = () => {
+    if (this.type() === 'number') return 0;
     const valor = this.deValor();
     return this.type() === 'date' && valor ? String(valor) : null;
   };
