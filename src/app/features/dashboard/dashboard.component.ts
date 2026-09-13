@@ -18,7 +18,7 @@ import { DateBrPipe } from '../../shared/pipes/date.pipe';
         Bem-vindo, {{ auth.usuario()?.nome ?? 'usuário' }}!
       </p>
 
-      <div class="dashboard__cards">
+      <div class="dashboard__cards flex flex-wrap gap-3">
         <div class="dashboard__card">
           <span class="dashboard__cardLabel">Valor de exemplo</span>
           <strong class="dashboard__cardValor">{{ 1234.5 | brl }}</strong>
@@ -75,6 +75,13 @@ import { DateBrPipe } from '../../shared/pipes/date.pipe';
     .dashboard__cardValor {
       font-size: 1.2rem;
       color: var(--petroleo-700);
+    }
+
+    /* Mobile: cards empilham ocupando a largura total */
+    @media (max-width: 768px) {
+      .dashboard__card {
+        min-width: 100%;
+      }
     }
   `,
 })

@@ -38,6 +38,14 @@ import { filter } from 'rxjs';
       color: var(--texto-secundario);
       opacity: 0.6;
     }
+
+    /* Mobile: breadcrumb mais compacto */
+    @media (max-width: 768px) {
+      .breadcrumb {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+      }
+    }
   `,
 })
 export class BreadcrumbComponent {

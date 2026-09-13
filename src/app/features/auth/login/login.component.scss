@@ -130,3 +130,18 @@
   text-decoration: underline;
   text-underline-offset: 3px;
 }
+
+/* Mobile: card mais compacto */
+@media (max-width: 768px) {
+  .login {
+    padding: 1rem;
+  }
+
+  .login__card {
+    padding: 1.25rem;
+  }
+
+  .login__brand {
+    margin-bottom: 1rem;
+  }
+}
