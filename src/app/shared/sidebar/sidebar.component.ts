@@ -33,14 +33,31 @@ import { AuthService } from '../../core/services/auth.service';
         >
           Dashboard
         </a>
+        <a
+          routerLink="/lotes"
+          routerLinkActive="sidebar__item--ativo"
+          class="sidebar__item"
+          (click)="fechar.emit()"
+        >
+          Outros Créditos/Débitos
+        </a>
       </nav>
       <button type="button" class="sidebar__sair" (click)="sair()">Sair</button>
     </aside>
   `,
   styles: `
+    :host {
+      display: block;
+    }
+
     .sidebar {
       width: 240px;
       min-height: 100vh;
+      /* min-height sozinho não acompanha o host esticado pelo flex de
+         .layout quando o conteúdo principal é mais alto que a viewport
+         (ex.: tabela com 10 linhas) — height:100% resolve contra o host
+         (que já foi esticado), então o menu cresce junto em vez de cortar. */
+      height: 100%;
       background: var(--petroleo-700);
       color: var(--surface-0);
       display: flex;

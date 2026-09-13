@@ -1,0 +1,90 @@
+.generic-table {
+  background: var(--surface-0);
+  border: 1px solid var(--surface-100);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.generic-table__scroll {
+  overflow-x: auto;
+}
+
+.generic-table__tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+/*
+ * th/td das colunas de header/linha vêm de fora (projetados via
+ * ngTemplateOutlet a partir do template de quem usa o componente), então
+ * carregam o atributo de encapsulamento do COMPONENTE CHAMADOR, não o
+ * deste componente — um seletor "scoped" comum não bateria neles.
+ * ::ng-deep, restrito a :host, aplica o estilo independente da origem do
+ * template, sem vazar pra fora deste componente.
+ */
+:host ::ng-deep {
+  .generic-table__tabela th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    background: var(--petroleo-700);
+    color: var(--surface-0);
+    white-space: nowrap;
+  }
+
+  .generic-table__tabela td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid var(--surface-100);
+    color: var(--texto-primario);
+    white-space: nowrap;
+  }
+}
+
+.generic-table__vazio {
+  text-align: center;
+  color: var(--texto-secundario);
+  white-space: normal;
+}
+
+.generic-table__paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-top: 1px solid var(--surface-100);
+}
+
+.generic-table__info {
+  font-size: 0.8rem;
+  color: var(--texto-secundario);
+}
+
+.generic-table__paginas {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.generic-table__paginas button {
+  min-width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--surface-100);
+  background: var(--surface-0);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  color: var(--texto-primario);
+  font-size: 0.85rem;
+}
+
+.generic-table__paginas button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.generic-table__pagina--ativa {
+  background: var(--agua-500);
+  color: var(--surface-0);
+  border-color: var(--agua-500);
+}

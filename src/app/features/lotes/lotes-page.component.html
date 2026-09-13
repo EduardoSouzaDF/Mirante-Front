@@ -1,24 +1,110 @@
 <section class="lotes-page">
   <h1 class="lotes-page__titulo">Outros Créditos/Débitos</h1>
 
-  <app-filter-panel [opcoes]="filtrosOptions()" (pesquisar)="onPesquisar($event)" />
+  <app-filter-panel titulo="Filtros" subtitulo="PESQUISAR LOTE OUTROS CRÉDITOS/DÉBITOS">
+    <form class="lotes-filtros__form" (ngSubmit)="onPesquisar()">
+      <div class="lotes-filtros__grid">
+        <div class="lotes-filtros__campo">
+          <label class="lotes-filtros__label">Instituição Resp.</label>
+          <select
+            class="lotes-filtros__select"
+            name="instituicaoRespId"
+            [(ngModel)]="instituicaoRespId"
+          >
+            <option value="">Todas</option>
+            @for (item of filtrosOptions()?.instituicoesResponsaveis; track item.id) {
+              <option [value]="item.id">{{ item.nome }}</option>
+            }
+          </select>
+        </div>
+
+        <app-range-field label="ID Lote" type="number" (rangeChange)="onIdChange($event)" />
+
+        <div class="lotes-filtros__campo">
+          <label class="lotes-filtros__label">Instituição</label>
+          <select class="lotes-filtros__select" name="instituicaoId" [(ngModel)]="instituicaoId">
+            <option value="">Todas</option>
+            @for (item of filtrosOptions()?.instituicoes; track item.id) {
+              <option [value]="item.id">{{ item.nome }}</option>
+            }
+          </select>
+        </div>
+
+        <app-range-field label="Valor Lote" type="currency" (rangeChange)="onValorChange($event)" />
+
+        <div class="lotes-filtros__campo">
+          <label class="lotes-filtros__label">Situação Lote</label>
+          <select class="lotes-filtros__select" name="situacao" [(ngModel)]="situacao">
+            <option value="Todas">Todas</option>
+            @for (item of filtrosOptions()?.situacoes; track item) {
+              <option [value]="item">{{ item }}</option>
+            }
+          </select>
+        </div>
+
+        <app-range-field label="Data Entrada" type="date" (rangeChange)="onDataChange($event)" />
+      </div>
+
+      <div class="lotes-filtros__acoes">
+        <button type="submit" class="lotes-filtros__pesquisar">Pesquisar</button>
+      </div>
+    </form>
+  </app-filter-panel>
 
   <app-lote-actions [selectionMode]="selectionMode()" (action)="onAction($event)" />
 
-  <app-lote-table
-    [lotes]="lotes()"
+  <app-generic-table
+    [items]="lotes()"
     [total]="total()"
     [page]="page()"
     [size]="size()"
     [selectedIds]="selectedIds()"
+    [trackBy]="loteId"
+    emptyMessage="Nenhum lote encontrado."
     (selectionChange)="facade.setSelecionados($event)"
     (pageChange)="facade.irParaPagina($event)"
-  />
+  >
+    <ng-template #header>
+      <th>ID Lote</th>
+      <th>Data Entrada</th>
+      <th>Valor</th>
+      <th>Quant. Lançamentos</th>
+      <th>Usuário Registro</th>
+      <th>Usuário Aprovação</th>
+      <th>Situação Lote</th>
+      <th>Data/Hora Situação Lote</th>
+    </ng-template>
+    <ng-template #row let-lote>
+      <td>{{ lote.id }}</td>
+      <td>{{ lote.dataEntrada | dataBr }}</td>
+      <td>{{ lote.valor | brl }}</td>
+      <td>{{ lote.quantidadeLancamentos }}</td>
+      <td>{{ lote.usuarioRegistro?.nome ?? '-' }}</td>
+      <td>{{ lote.usuarioAprovacao?.nome ?? '-' }}</td>
+      <td>
+        <span
+          class="lotes-page__badge"
+          [class]="'lotes-page__badge--' + lote.situacao.toLowerCase()"
+        >
+          {{ lote.situacao }}
+        </span>
+      </td>
+      <td>{{ lote.dataHoraSituacao | dataHoraBr }}</td>
+    </ng-template>
+  </app-generic-table>
 
   <app-lote-detail-dialog
     [visible]="modalVisivel()"
     [loteId]="loteSelecionadoId()"
     (closed)="onFecharModal()"
     (action)="onModalAction($event)"
+  />
+
+  <app-scope-confirm-dialog
+    [visible]="escopoModalVisivel()"
+    [acaoLabel]="acaoPendenteLabel()"
+    [mostrarTodos]="mostrarOpcaoTodos()"
+    (escolha)="onEscopoEscolhido($event)"
+    (cancelado)="onEscopoCancelado()"
   />
 </section>

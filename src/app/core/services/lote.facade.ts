@@ -121,15 +121,27 @@ export class LoteFacade {
     return this.http.get<LoteDetalhe>(`/api/lotes/${id}`);
   }
 
-  confirmar(id: number): Observable<Lote> {
+  /**
+   * Todos os lotes que batem com o filtro atual, ignorando paginação.
+   * Devolve o Lote inteiro (não só o id) para quem chama poder filtrar por
+   * situação antes de aplicar uma ação em massa.
+   */
+  listarTodosLotesFiltroAtual(): Observable<Lote[]> {
+    const { filtro } = this.consultaSubject.value;
+    return this.buscar(filtro, 1, 100000).pipe(map((r) => r.data));
+  }
+
+  /** Confirma todos os ids passados numa única chamada HTTP. */
+  confirmarEmMassa(ids: number[]): Observable<{ lotes: Lote[] }> {
     return this.http
-      .post<Lote>(`/api/lotes/${id}/confirmar`, {})
+      .post<{ lotes: Lote[] }>('/api/lotes/confirmar', { ids })
       .pipe(tap(() => this.recarregarSubject.next()));
   }
 
-  enviar(id: number): Observable<Lote> {
+  /** Envia todos os ids passados numa única chamada HTTP. */
+  enviarEmMassa(ids: number[]): Observable<{ lotes: Lote[] }> {
     return this.http
-      .post<Lote>(`/api/lotes/${id}/enviar`, {})
+      .post<{ lotes: Lote[] }>('/api/lotes/enviar', { ids })
       .pipe(tap(() => this.recarregarSubject.next()));
   }
 
@@ -146,8 +158,9 @@ export class LoteFacade {
     return this.http.post<{ message: string }>('/api/lotes/incluir', {});
   }
 
-  justificativa(id: number): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`/api/lotes/${id}/justificativa`, {});
+  /** Justificativa (placeholder) para todos os ids passados numa única chamada. */
+  justificativaEmMassa(ids: number[]): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>('/api/lotes/justificativa', { ids });
   }
 
   private buscar(filtro: FiltroLote, page: number, size: number): Observable<PaginatedResponse<Lote>> {

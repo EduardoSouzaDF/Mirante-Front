@@ -1,0 +1,64 @@
+<div class="generic-table">
+  <div class="generic-table__scroll">
+    <table class="generic-table__tabela">
+      <thead>
+        <tr>
+          <th>
+            <input
+              type="checkbox"
+              [checked]="todosSelecionados()"
+              [indeterminate]="algumSelecionado()"
+              (change)="toggleTodos()"
+              aria-label="Selecionar todos"
+            />
+          </th>
+          <ng-container [ngTemplateOutlet]="headerTemplate ?? null"></ng-container>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items(); track trackBy()(item)) {
+          <tr>
+            <td>
+              <input
+                type="checkbox"
+                [checked]="selectedIds().has(trackBy()(item))"
+                (change)="toggleLinha(trackBy()(item))"
+                [attr.aria-label]="'Selecionar item ' + trackBy()(item)"
+              />
+            </td>
+            <ng-container
+              [ngTemplateOutlet]="rowTemplate ?? null"
+              [ngTemplateOutletContext]="{ $implicit: item }"
+            ></ng-container>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="100" class="generic-table__vazio">{{ emptyMessage() }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="generic-table__paginacao">
+    <span class="generic-table__info">
+      Mostrando {{ inicioExibicao() }} a {{ fimExibicao() }} de {{ total() }}
+    </span>
+    <div class="generic-table__paginas">
+      <button type="button" (click)="irParaPagina(1)" [disabled]="page() === 1">«</button>
+      <button type="button" (click)="irParaPagina(page() - 1)" [disabled]="page() === 1">‹</button>
+      @for (p of paginas(); track p) {
+        <button
+          type="button"
+          class="generic-table__pagina"
+          [class.generic-table__pagina--ativa]="p === page()"
+          (click)="irParaPagina(p)"
+        >
+          {{ p }}
+        </button>
+      }
+      <button type="button" (click)="irParaPagina(page() + 1)" [disabled]="page() === totalPaginas()">›</button>
+      <button type="button" (click)="irParaPagina(totalPaginas())" [disabled]="page() === totalPaginas()">»</button>
+    </div>
+  </div>
+</div>

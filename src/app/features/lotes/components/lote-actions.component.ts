@@ -88,8 +88,10 @@ export class LoteActionsComponent {
   private readonly precisaAoMenosUm = computed(() => this.selectionMode() !== 'none');
 
   habilitado(acao: LoteAcao): boolean {
-    if (acao === 'incluir') return true;
+    if (acao === 'incluir' || acao === 'confirmar' || acao === 'enviar' || acao === 'justificativa') {
+      return true;
+    }
     if (acao === 'alterar' || acao === 'visualizar') return this.precisaUm();
-    return this.precisaAoMenosUm();
+    return this.precisaAoMenosUm(); // excluir: precisa de ao menos 1 selecionado
   }
 }

@@ -25,13 +25,18 @@ describe('LoteActionsComponent', () => {
     expect(component.habilitado('alterar')).toBeFalse();
     expect(component.habilitado('visualizar')).toBeFalse();
     expect(component.habilitado('confirmar')).toBeTrue();
+    expect(component.habilitado('excluir')).toBeTrue();
   });
 
-  it('sem seleção, só Incluir fica habilitado', () => {
+  it('sem seleção, Incluir/Confirmar/Enviar/Justificativa ficam habilitados; Alterar/Visualizar/Excluir não', () => {
     fixture.componentRef.setInput('selectionMode', 'none');
     fixture.detectChanges();
     expect(component.habilitado('incluir')).toBeTrue();
-    expect(component.habilitado('confirmar')).toBeFalse();
+    expect(component.habilitado('confirmar')).toBeTrue();
+    expect(component.habilitado('enviar')).toBeTrue();
+    expect(component.habilitado('justificativa')).toBeTrue();
     expect(component.habilitado('alterar')).toBeFalse();
+    expect(component.habilitado('visualizar')).toBeFalse();
+    expect(component.habilitado('excluir')).toBeFalse();
   });
 });

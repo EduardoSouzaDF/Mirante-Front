@@ -88,10 +88,26 @@ describe('LoteFacade', () => {
     req.flush(PAGINA_MOCK);
   });
 
-  it('confirmar() chama POST /api/lotes/:id/confirmar', () => {
-    facade.confirmar(1).subscribe();
-    const req = httpMock.expectOne('/api/lotes/1/confirmar');
+  it('confirmarEmMassa() faz uma única chamada POST /api/lotes/confirmar com todos os ids', () => {
+    facade.confirmarEmMassa([1, 2, 3]).subscribe();
+    const req = httpMock.expectOne('/api/lotes/confirmar');
     expect(req.request.method).toBe('POST');
-    req.flush({ ...LOTE_MOCK, situacao: 'Confirmado' });
+    expect(req.request.body).toEqual({ ids: [1, 2, 3] });
+    req.flush({ lotes: [{ ...LOTE_MOCK, situacao: 'Confirmado' }] });
+  });
+
+  it('enviarEmMassa() faz uma única chamada POST /api/lotes/enviar com todos os ids', () => {
+    facade.enviarEmMassa([4, 5]).subscribe();
+    const req = httpMock.expectOne('/api/lotes/enviar');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ ids: [4, 5] });
+    req.flush({ lotes: [] });
+  });
+
+  it('justificativaEmMassa() faz uma única chamada POST /api/lotes/justificativa com todos os ids', () => {
+    facade.justificativaEmMassa([7]).subscribe();
+    const req = httpMock.expectOne('/api/lotes/justificativa');
+    expect(req.request.body).toEqual({ ids: [7] });
+    req.flush({ message: 'OK (placeholder)' });
   });
 });

@@ -83,7 +83,11 @@ export class RangeFieldComponent {
   readonly placeholderDe = input('');
   readonly placeholderAte = input('');
 
-  readonly change = output<RangeFieldValue>();
+  // Nome diferente de "change" de propósito: esse é um evento nativo do DOM
+  // que borbulha dos <input> internos e, se o output tivesse o mesmo nome,
+  // um segundo disparo (com o Event cru, não o RangeFieldValue) sobrescrevia
+  // o valor correto no componente pai.
+  readonly rangeChange = output<RangeFieldValue>();
 
   private readonly deValor = signal<string | number | null>(null);
   private readonly ateValor = signal<string | number | null>(null);
@@ -119,19 +123,25 @@ export class RangeFieldComponent {
   }
 
   onDe(evento: Event): void {
-    const bruto = (evento.target as HTMLInputElement).value;
-    const { exibicao, valor } = this.processar(bruto);
+    const input = evento.target as HTMLInputElement;
+    const { exibicao, valor } = this.processar(input.value);
+    // Escreve direto no elemento: se o texto sanitizado for igual ao anterior
+    // (ex: usuário digitou uma letra que foi descartada), o binding [value]
+    // não gera um novo write no DOM — e o caractere inválido ficaria "colado"
+    // no campo. Setar aqui garante que o campo sempre reflita o valor limpo.
+    input.value = exibicao;
     this.deExibicao.set(exibicao);
     this.deValor.set(valor);
-    this.emitir();
+    this.emitirMudanca();
   }
 
   onAte(evento: Event): void {
-    const bruto = (evento.target as HTMLInputElement).value;
-    const { exibicao, valor } = this.processar(bruto);
+    const input = evento.target as HTMLInputElement;
+    const { exibicao, valor } = this.processar(input.value);
+    input.value = exibicao;
     this.ateExibicao.set(exibicao);
     this.ateValor.set(valor);
-    this.emitir();
+    this.emitirMudanca();
   }
 
   private processar(bruto: string): { exibicao: string; valor: string | number | null } {
@@ -156,7 +166,7 @@ export class RangeFieldComponent {
     return { exibicao: bruto, valor: bruto || null };
   }
 
-  private emitir(): void {
-    this.change.emit({ de: this.deValor(), ate: this.ateValor() });
+  private emitirMudanca(): void {
+    this.rangeChange.emit({ de: this.deValor(), ate: this.ateValor() });
   }
 }
