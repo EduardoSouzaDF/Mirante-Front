@@ -82,10 +82,15 @@ describe('IncluirLancamentoDialogComponent', () => {
     expect(component.form.valid).toBeTrue();
   });
 
-  it('confirmar() com formulário válido cria o lançamento e limpa pro próximo', () => {
+  it('confirmar() com formulário válido cria o lançamento, fecha a modal e emite incluído', () => {
     component.form.patchValue({ contaCorrenteId: 4, valor: 100, historico: 'Lançamento Manual' });
     component.documentos.set([{ nome: 'comprovante.pdf' }]);
     component.form.controls.documentos.setValue([{ nome: 'comprovante.pdf' }]);
+
+    let incluidoEmitido = false;
+    let fechadoEmitido = false;
+    component.incluido.subscribe(() => (incluidoEmitido = true));
+    component.closed.subscribe(() => (fechadoEmitido = true));
 
     component.confirmar();
 
@@ -121,10 +126,11 @@ describe('IncluirLancamentoDialogComponent', () => {
       .match(() => true)
       .forEach((r) => r.flush({ data: [], total: 0, page: 1, size: 10, hasNext: false, hasPrevious: false }));
 
-    expect(component.lancamentosIncluidos().length).toBe(1);
-    expect(component.lancamentosIncluidos()[0].id).toBe(99);
-    // formulário reseta os campos do lançamento (mas mantém a conta encontrada)
+    expect(incluidoEmitido).toBeTrue();
+    expect(fechadoEmitido).toBeTrue();
+    // fechar() reseta o formulário por completo (modal fecha, não fica pra outro lançamento)
     expect(component.form.controls.valor.value).toBeNull();
+    expect(component.form.controls.contaCorrenteId.value).toBeNull();
     expect(component.documentos()).toEqual([]);
   });
 

@@ -10,6 +10,7 @@ import {
   calcularValorLote,
 } from '../../core/models/lote.model';
 import { LoteFacade } from '../../core/services/lote.facade';
+import { AvisoToastComponent, TipoAviso } from '../../shared/aviso-toast/aviso-toast.component';
 import { FilterPanelComponent } from '../../shared/filter-panel/filter-panel.component';
 import { GenericTableComponent } from '../../shared/generic-table/generic-table.component';
 import { CurrencyBRLPipe } from '../../shared/pipes/currency.pipe';
@@ -55,6 +56,7 @@ const SITUACAO_EXIGIDA: Partial<Record<AcaoEmMassa, SituacaoLote>> = {
     LoteDetailDialogComponent,
     ScopeConfirmDialogComponent,
     IncluirLancamentoDialogComponent,
+    AvisoToastComponent,
   ],
   templateUrl: './lotes-page.component.html',
   styleUrl: './lotes-page.component.scss',
@@ -74,6 +76,11 @@ export class LotesPageComponent {
   protected readonly loteSelecionadoId = signal<number | null>(null);
 
   protected readonly incluirModalVisivel = signal(false);
+
+  protected readonly avisoVisivel = signal(false);
+  protected readonly avisoTitulo = signal('');
+  protected readonly avisoMensagem = signal('');
+  protected readonly avisoTipo = signal<TipoAviso>('success');
 
   protected readonly calcularValorLote = calcularValorLote;
   protected readonly calcularQuantidadeLancamentos = calcularQuantidadeLancamentos;
@@ -190,6 +197,17 @@ export class LotesPageComponent {
 
   onFecharIncluirModal(): void {
     this.incluirModalVisivel.set(false);
+  }
+
+  onLancamentoIncluido(): void {
+    this.avisoTitulo.set('Sucesso');
+    this.avisoMensagem.set('Lançamento incluído com sucesso.');
+    this.avisoTipo.set('success');
+    this.avisoVisivel.set(true);
+  }
+
+  onAvisoFechado(): void {
+    this.avisoVisivel.set(false);
   }
 
   onModalAction(acao: 'alterar' | 'justificativa'): void {

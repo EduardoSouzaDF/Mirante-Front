@@ -142,39 +142,6 @@
         <span class="incluir-dialog__obrigatorio">*</span> campo obrigatório
       </p>
 
-      @if (lancamentosIncluidos().length) {
-        <div class="incluir-dialog__grade">
-          <span class="incluir-dialog__label">Lançamentos incluídos nesta sessão</span>
-          <table class="incluir-dialog__tabela">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Valor</th>
-                <th>Histórico</th>
-                <th>Situação</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (lanc of lancamentosIncluidos(); track lanc.id) {
-                <tr>
-                  <td>{{ lanc.id }}</td>
-                  <td>{{ lanc.valor | brl }}</td>
-                  <td>{{ lanc.historico }}</td>
-                  <td>{{ lanc.situacao }}</td>
-                  <td class="incluir-dialog__acoesLinha">
-                    <button type="button" (click)="acaoPlaceholder(lanc, 'visualizar')">Visualizar</button>
-                    <button type="button" (click)="acaoPlaceholder(lanc, 'alterar')">Alterar</button>
-                    <button type="button" (click)="acaoPlaceholder(lanc, 'excluir')">Excluir</button>
-                    <button type="button" (click)="acaoPlaceholder(lanc, 'duplicar')">Duplicar</button>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
-
       <div class="incluir-dialog__rodape">
         <button type="button" class="incluir-dialog__cancelar" (click)="fechar()">Fechar</button>
         <button type="submit" class="incluir-dialog__confirmar" [disabled]="form.invalid || enviando()">

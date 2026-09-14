@@ -206,40 +206,6 @@
   color: var(--texto-secundario);
 }
 
-.incluir-dialog__grade {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.incluir-dialog__tabela {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.8rem;
-}
-
-.incluir-dialog__tabela th,
-.incluir-dialog__tabela td {
-  padding: 0.4rem 0.5rem;
-  border-bottom: 1px solid var(--surface-100);
-  text-align: left;
-}
-
-.incluir-dialog__acoesLinha {
-  display: flex;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-}
-
-.incluir-dialog__acoesLinha button {
-  padding: 0.15rem 0.4rem;
-  border: 1px solid var(--surface-100);
-  background: var(--surface-50);
-  border-radius: 0.25rem;
-  font-size: 0.7rem;
-  cursor: pointer;
-}
-
 .incluir-dialog__rodape {
   display: flex;
   justify-content: flex-end;

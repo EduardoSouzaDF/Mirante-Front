@@ -111,5 +111,15 @@
   <app-incluir-lancamento-dialog
     [visible]="incluirModalVisivel()"
     (closed)="onFecharIncluirModal()"
+    (incluido)="onLancamentoIncluido()"
+  />
+
+  <app-aviso-toast
+    [visible]="avisoVisivel()"
+    [titulo]="avisoTitulo()"
+    [mensagem]="avisoMensagem()"
+    [tipo]="avisoTipo()"
+    [tempo]="3"
+    (fechado)="onAvisoFechado()"
   />
 </section>

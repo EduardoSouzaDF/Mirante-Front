@@ -7,9 +7,8 @@ import {
 } from '@angular/forms';
 
 import { ContaCorrenteBusca } from '../../../core/models/conta-corrente.model';
-import { HISTORICOS_DISPONIVEIS, Lancamento } from '../../../core/models/lancamento.model';
+import { HISTORICOS_DISPONIVEIS } from '../../../core/models/lancamento.model';
 import { LoteFacade } from '../../../core/services/lote.facade';
-import { CurrencyBRLPipe } from '../../../shared/pipes/currency.pipe';
 import { processarMascaraMoeda } from '../../../shared/utils/mascara-moeda.util';
 
 /** Validador: precisa de ao menos 1 arquivo anexado. */
@@ -32,7 +31,7 @@ export function rotuloContaCorrente(item: ContaCorrenteBusca): string {
 @Component({
   selector: 'app-incluir-lancamento-dialog',
   standalone: true,
-  imports: [ReactiveFormsModule, CurrencyBRLPipe],
+  imports: [ReactiveFormsModule],
   templateUrl: './incluir-lancamento-dialog.component.html',
   styleUrl: './incluir-lancamento-dialog.component.scss',
 })
@@ -42,6 +41,7 @@ export class IncluirLancamentoDialogComponent {
 
   readonly visible = input(false);
   readonly closed = output<void>();
+  readonly incluido = output<void>();
 
   readonly historicos = HISTORICOS_DISPONIVEIS;
   readonly rotuloContaCorrente = rotuloContaCorrente;
@@ -69,7 +69,6 @@ export class IncluirLancamentoDialogComponent {
   });
 
   readonly enviando = signal(false);
-  readonly lancamentosIncluidos = signal<Lancamento[]>([]);
 
   constructor() {
     this.facade.listarContasCorrentes().subscribe((contas) => this.opcoesContas.set(contas));
@@ -141,11 +140,10 @@ export class IncluirLancamentoDialogComponent {
         descricao: valores.descricao,
       })
       .subscribe({
-        next: (lote) => {
-          const ultimo = lote.lancamentos[lote.lancamentos.length - 1];
-          this.lancamentosIncluidos.update((atuais) => [...atuais, ultimo]);
+        next: () => {
           this.enviando.set(false);
-          this.resetarFormularioNovoLancamento();
+          this.incluido.emit();
+          this.fechar();
         },
         error: () => this.enviando.set(false),
       });
@@ -156,7 +154,6 @@ export class IncluirLancamentoDialogComponent {
     this.contaEncontrada.set(null);
     this.valorExibicao.set('');
     this.documentos.set([]);
-    this.lancamentosIncluidos.set([]);
     this.form.reset({
       contaCorrenteId: null,
       valor: null,
@@ -169,12 +166,6 @@ export class IncluirLancamentoDialogComponent {
     this.closed.emit();
   }
 
-  /** Ação sem lógica real nesta spec — só a inclusão está implementada. */
-  acaoPlaceholder(_lancamento: Lancamento, _acao: 'visualizar' | 'alterar' | 'excluir' | 'duplicar'): void {
-    // Intencionalmente vazio: Visualizar/Alterar/Excluir/Duplicar de um
-    // lançamento já incluído são spec futura.
-  }
-
   private adicionarArquivos(arquivos: FileList | null): void {
     if (!arquivos || arquivos.length === 0) return;
     const novos = Array.from(arquivos).map((arquivo) => ({ nome: arquivo.name }));
@@ -182,23 +173,5 @@ export class IncluirLancamentoDialogComponent {
     this.documentos.set(atualizados);
     this.form.controls.documentos.setValue(atualizados);
     this.form.controls.documentos.markAsTouched();
-  }
-
-  private resetarFormularioNovoLancamento(): void {
-    this.documentos.set([]);
-    this.valorExibicao.set('');
-    this.form.patchValue({
-      valor: null,
-      historico: '',
-      estorno: false,
-      documentos: [],
-      descricao: '',
-    });
-    this.form.controls.valor.markAsPristine();
-    this.form.controls.valor.markAsUntouched();
-    this.form.controls.historico.markAsPristine();
-    this.form.controls.historico.markAsUntouched();
-    this.form.controls.documentos.markAsPristine();
-    this.form.controls.documentos.markAsUntouched();
   }
 }
