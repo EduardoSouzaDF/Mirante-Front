@@ -1,0 +1,23 @@
+@if (visible()) {
+  <div class="aviso-toast aviso-toast--{{ tipo() }}" role="status" aria-live="polite">
+    <div class="aviso-toast__conteudo">
+      <i class="pi" [class]="icone()"></i>
+      <div class="aviso-toast__texto">
+        @if (titulo()) {
+          <strong>{{ titulo() }}</strong>
+        }
+        <span>{{ mensagem() }}</span>
+      </div>
+      <button type="button" class="aviso-toast__fechar" (click)="fechar()" aria-label="Fechar aviso">
+        ✕
+      </button>
+    </div>
+    <div class="aviso-toast__barra">
+      <div
+        class="aviso-toast__progresso"
+        [style.width.%]="progresso()"
+        [style.transition]="transicaoBarra()"
+      ></div>
+    </div>
+  </div>
+}

@@ -1,5 +1,7 @@
 import { Component, input, output, signal } from '@angular/core';
 
+import { processarMascaraMoeda } from '../utils/mascara-moeda.util';
+
 export interface RangeFieldValue {
   de: string | number | null;
   ate: string | number | null;
@@ -146,15 +148,7 @@ export class RangeFieldComponent {
 
   private processar(bruto: string): { exibicao: string; valor: string | number | null } {
     if (this.type() === 'currency') {
-      const digitos = bruto.replace(/\D/g, '');
-      if (!digitos) {
-        return { exibicao: '', valor: null };
-      }
-      const numero = Number(digitos) / 100;
-      return {
-        exibicao: numero.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-        valor: numero,
-      };
+      return processarMascaraMoeda(bruto);
     }
     if (this.type() === 'number') {
       if (!bruto) {

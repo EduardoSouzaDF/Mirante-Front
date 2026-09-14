@@ -1,0 +1,153 @@
+@if (visible()) {
+  <div class="incluir-dialog__overlay" (click)="fechar()" aria-hidden="true"></div>
+  <div class="incluir-dialog" role="dialog" aria-modal="true" aria-label="Incluir lançamento">
+    <div class="incluir-dialog__header">
+      <strong>Incluir Lançamento</strong>
+      <button type="button" class="incluir-dialog__fechar" (click)="fechar()" aria-label="Fechar">
+        ✕
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="confirmar()" class="incluir-dialog__form">
+      <fieldset class="incluir-dialog__secao">
+        <legend>Conta Corrente</legend>
+
+        <div class="incluir-dialog__campo">
+          <label class="incluir-dialog__label">
+            Conta Corrente <span class="incluir-dialog__obrigatorio">*</span>
+          </label>
+          <div class="incluir-dialog__busca">
+            <i class="pi pi-search incluir-dialog__lupaIcone"></i>
+            <input
+              type="text"
+              [formControl]="contaTexto"
+              list="incluir-dialog-contas"
+              placeholder="Pesquisar conta corrente…"
+              (input)="onContaTextoChange()"
+              (change)="onContaTextoChange()"
+            />
+            <datalist id="incluir-dialog-contas">
+              @for (item of opcoesContas(); track item.conta.id) {
+                <option [value]="rotuloContaCorrente(item)"></option>
+              }
+            </datalist>
+          </div>
+          @if (contaEncontrada(); as resultado) {
+            <span class="incluir-dialog__titular">Titular: {{ resultado.instituicao?.nome }}</span>
+          }
+          @if (form.controls.contaCorrenteId.invalid && form.controls.contaCorrenteId.touched) {
+            <span class="incluir-dialog__erro">Selecione uma conta corrente válida da lista.</span>
+          }
+        </div>
+
+        <div class="incluir-dialog__campo">
+          <label class="incluir-dialog__label">
+            Valor <span class="incluir-dialog__obrigatorio">*</span>
+          </label>
+          <input
+            type="text"
+            inputmode="numeric"
+            placeholder="R$ 0,00"
+            [value]="valorExibicao()"
+            (input)="onValorInput($event)"
+          />
+          @if (form.controls.valor.invalid && form.controls.valor.touched) {
+            <span class="incluir-dialog__erro">
+              @if (form.controls.valor.errors?.['required']) {
+                Informe o valor.
+              } @else {
+                O valor deve ser maior que zero.
+              }
+            </span>
+          }
+        </div>
+
+        <div class="incluir-dialog__campo">
+          <label class="incluir-dialog__label">
+            Histórico <span class="incluir-dialog__obrigatorio">*</span>
+          </label>
+          <select formControlName="historico" (blur)="form.controls.historico.markAsTouched()">
+            <option value="">Selecione</option>
+            @for (item of historicos; track item) {
+              <option [value]="item">{{ item }}</option>
+            }
+          </select>
+          @if (form.controls.historico.invalid && form.controls.historico.touched) {
+            <span class="incluir-dialog__erro">Selecione o histórico.</span>
+          }
+        </div>
+
+        <div class="incluir-dialog__campo incluir-dialog__campo--linha">
+          <label class="incluir-dialog__checkbox">
+            <input type="checkbox" formControlName="estorno" />
+            Estorno
+          </label>
+        </div>
+
+        <div class="incluir-dialog__campo">
+          <label class="incluir-dialog__label">
+            Documento <span class="incluir-dialog__obrigatorio">*</span>
+          </label>
+          <label
+            class="incluir-dialog__dropzone"
+            [class.incluir-dialog__dropzone--ativo]="arrastandoArquivo()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)"
+          >
+            <i class="pi pi-cloud-upload"></i>
+            <span>Arraste arquivos aqui ou clique para selecionar</span>
+            <input type="file" multiple (change)="onArquivosSelecionados($event)" hidden />
+          </label>
+          @if (documentos().length) {
+            <ul class="incluir-dialog__arquivos">
+              @for (doc of documentos(); track doc.nome; let i = $index) {
+                <li>
+                  {{ doc.nome }}
+                  <button type="button" (click)="removerDocumento(i)" aria-label="Remover arquivo">✕</button>
+                </li>
+              }
+            </ul>
+          }
+          @if (form.controls.documentos.invalid && form.controls.documentos.touched) {
+            <span class="incluir-dialog__erro">Anexe ao menos um documento.</span>
+          }
+        </div>
+
+        <div class="incluir-dialog__campo">
+          <label class="incluir-dialog__label">Descrição</label>
+          <textarea formControlName="descricao" rows="2"></textarea>
+        </div>
+
+        <div class="incluir-dialog__campo">
+          <label class="incluir-dialog__label">Situação</label>
+          <input type="text" value="Pendente" readonly />
+        </div>
+      </fieldset>
+
+      <fieldset class="incluir-dialog__secao">
+        <legend>Documento CSC</legend>
+        <div class="incluir-dialog__campo">
+          <label class="incluir-dialog__label">PA</label>
+          <select formControlName="pa">
+            <option value="">Selecione</option>
+            <option value="0001">0001</option>
+            <option value="0002">0002</option>
+            <option value="0003">0003</option>
+          </select>
+        </div>
+      </fieldset>
+
+      <p class="incluir-dialog__legenda">
+        <span class="incluir-dialog__obrigatorio">*</span> campo obrigatório
+      </p>
+
+      <div class="incluir-dialog__rodape">
+        <button type="button" class="incluir-dialog__cancelar" (click)="fechar()">Fechar</button>
+        <button type="submit" class="incluir-dialog__confirmar" [disabled]="form.invalid || enviando()">
+          Incluir
+        </button>
+      </div>
+    </form>
+  </div>
+}

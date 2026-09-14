@@ -2,14 +2,22 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 
-import { FiltroLote, Lote, SituacaoLote } from '../../core/models/lote.model';
+import {
+  FiltroLote,
+  Lote,
+  SituacaoLote,
+  calcularQuantidadeLancamentos,
+  calcularValorLote,
+} from '../../core/models/lote.model';
 import { LoteFacade } from '../../core/services/lote.facade';
+import { AvisoToastComponent, TipoAviso } from '../../shared/aviso-toast/aviso-toast.component';
 import { FilterPanelComponent } from '../../shared/filter-panel/filter-panel.component';
 import { GenericTableComponent } from '../../shared/generic-table/generic-table.component';
 import { CurrencyBRLPipe } from '../../shared/pipes/currency.pipe';
 import { DateBrPipe } from '../../shared/pipes/date.pipe';
 import { DateHoraBrPipe } from '../../shared/pipes/datetime.pipe';
 import { RangeFieldComponent, RangeFieldValue } from '../../shared/range-field/range-field.component';
+import { IncluirLancamentoDialogComponent } from './components/incluir-lancamento-dialog.component';
 import { LoteActionsComponent, LoteAcao } from './components/lote-actions.component';
 import { LoteDetailDialogComponent } from './components/lote-detail-dialog.component';
 import { EscopoAcao, ScopeConfirmDialogComponent } from './components/scope-confirm-dialog.component';
@@ -47,6 +55,8 @@ const SITUACAO_EXIGIDA: Partial<Record<AcaoEmMassa, SituacaoLote>> = {
     LoteActionsComponent,
     LoteDetailDialogComponent,
     ScopeConfirmDialogComponent,
+    IncluirLancamentoDialogComponent,
+    AvisoToastComponent,
   ],
   templateUrl: './lotes-page.component.html',
   styleUrl: './lotes-page.component.scss',
@@ -64,6 +74,16 @@ export class LotesPageComponent {
 
   protected readonly modalVisivel = signal(false);
   protected readonly loteSelecionadoId = signal<number | null>(null);
+
+  protected readonly incluirModalVisivel = signal(false);
+
+  protected readonly avisoVisivel = signal(false);
+  protected readonly avisoTitulo = signal('');
+  protected readonly avisoMensagem = signal('');
+  protected readonly avisoTipo = signal<TipoAviso>('success');
+
+  protected readonly calcularValorLote = calcularValorLote;
+  protected readonly calcularQuantidadeLancamentos = calcularQuantidadeLancamentos;
 
   // Modal de escopo: Confirmar/Enviar/Justificativa sem seleção perguntam se
   // é só para os lotes desta página ou para todos os lotes do filtro atual.
@@ -128,7 +148,7 @@ export class LotesPageComponent {
 
     switch (acao) {
       case 'incluir':
-        this.facade.incluir().subscribe();
+        this.incluirModalVisivel.set(true);
         return;
       case 'alterar':
       case 'visualizar':
@@ -173,6 +193,21 @@ export class LotesPageComponent {
   onFecharModal(): void {
     this.modalVisivel.set(false);
     this.loteSelecionadoId.set(null);
+  }
+
+  onFecharIncluirModal(): void {
+    this.incluirModalVisivel.set(false);
+  }
+
+  onLancamentoIncluido(): void {
+    this.avisoTitulo.set('Sucesso');
+    this.avisoMensagem.set('Lançamento incluído com sucesso.');
+    this.avisoTipo.set('success');
+    this.avisoVisivel.set(true);
+  }
+
+  onAvisoFechado(): void {
+    this.avisoVisivel.set(false);
   }
 
   onModalAction(acao: 'alterar' | 'justificativa'): void {

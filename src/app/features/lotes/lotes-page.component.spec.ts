@@ -22,13 +22,23 @@ function loteMock(id: number, situacao: Lote['situacao']): Lote {
     id,
     resp: { id: '0001', nome: '0001 - SICOOB' },
     instituicao: { id: '0001', nome: '0001 - SICOOB' },
-    valor: 100,
-    quantidadeLancamentos: 1,
     usuarioRegistro: { id: 'u-001', nome: 'gearqc0300_00' },
     usuarioAprovacao: null,
     situacao,
     dataEntrada: '2026-04-20',
     dataHoraSituacao: '2026-04-20T10:00:00',
+    lancamentos: [
+      {
+        id,
+        contaCorrenteId: 1,
+        valor: 100,
+        historico: 'Lançamento Manual',
+        estorno: false,
+        documentos: [{ id: 1, nome: 'doc.pdf', pathUrl: '/mock-files/doc.pdf' }],
+        descricao: '',
+        situacao: 'Confirmado',
+      },
+    ],
   };
 }
 
@@ -47,11 +57,14 @@ describe('LotesPageComponent', () => {
     fixture.detectChanges();
 
     // Requisições disparadas ao criar o componente: carregarFiltros() no
-    // construtor + a busca inicial automática ao assinar lotes$/total$.
+    // construtor + a busca inicial automática ao assinar lotes$/total$ +
+    // a lista de contas correntes carregada pelo IncluirLancamentoDialogComponent
+    // (sempre no template, só escondido via [visible]).
     httpMock
       .expectOne((r) => r.url.startsWith('/api/filtros/lotes'))
       .flush({ instituicoes: [], instituicoesResponsaveis: [], situacoes: [] });
     httpMock.expectOne((r) => r.url.startsWith('/api/lotes')).flush(RESULTADO_VAZIO);
+    httpMock.expectOne('/api/contas-correntes').flush({ contas: [] });
   });
 
   afterEach(() => httpMock.verify());
@@ -116,5 +129,11 @@ describe('LotesPageComponent', () => {
 
     // enviarEmMassa() recarrega a listagem após o POST.
     httpMock.expectOne((r) => r.url.startsWith('/api/lotes')).flush(RESULTADO_VAZIO);
+  });
+
+  it('onAction("incluir") abre a modal de inclusão de lançamento', () => {
+    expect((component as any).incluirModalVisivel()).toBeFalse();
+    component.onAction('incluir');
+    expect((component as any).incluirModalVisivel()).toBeTrue();
   });
 });

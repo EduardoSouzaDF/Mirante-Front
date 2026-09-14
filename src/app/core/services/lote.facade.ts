@@ -16,6 +16,8 @@ import {
   tap,
 } from 'rxjs';
 
+import { ContaCorrenteBusca } from '../models/conta-corrente.model';
+import { IncluirLancamentoPayload } from '../models/lancamento.model';
 import {
   FiltroLote,
   FiltrosLoteOpcoes,
@@ -154,8 +156,25 @@ export class LoteFacade {
     );
   }
 
-  incluir(): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>('/api/lotes/incluir', {});
+  /** Busca conta corrente por número (aceita "agencia-conta" ou só a conta). */
+  buscarContaCorrente(numero: string): Observable<ContaCorrenteBusca> {
+    return this.http.get<ContaCorrenteBusca>('/api/contas-correntes', {
+      params: { numero },
+    });
+  }
+
+  /** Lista todas as contas correntes (pro select pesquisável de Incluir Lançamento). */
+  listarContasCorrentes(): Observable<ContaCorrenteBusca[]> {
+    return this.http
+      .get<{ contas: ContaCorrenteBusca[] }>('/api/contas-correntes')
+      .pipe(map((r) => r.contas));
+  }
+
+  /** Cria o lançamento e o lote novo (Aberto) para a instituição da conta. */
+  incluirLancamento(payload: IncluirLancamentoPayload): Observable<Lote> {
+    return this.http
+      .post<Lote>('/api/lancamentos', payload)
+      .pipe(tap(() => this.recarregarSubject.next()));
   }
 
   /** Justificativa (placeholder) para todos os ids passados numa única chamada. */

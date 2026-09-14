@@ -1,36 +1,43 @@
-export type SituacaoLote = 'Aberto' | 'Confirmado' | 'Enviado';
+import { Instituicao } from './conta-corrente.model';
+import { Lancamento } from './lancamento.model';
 
-export interface Instituicao {
-  id: string;
-  nome: string;
-}
+// Reexportado por compatibilidade — Instituicao agora mora em
+// conta-corrente.model.ts porque referencia ContaCorrente.
+export type { Instituicao };
+
+export type SituacaoLote = 'Aberto' | 'Confirmado' | 'Enviado';
 
 export interface Usuario {
   id: string;
   nome: string;
 }
 
-export interface Lancamento {
-  id: number;
-  descricao: string;
-  valor: number;
-}
-
 export interface Lote {
   id: number;
   resp: Instituicao | null;
   instituicao: Instituicao | null;
-  valor: number;
-  quantidadeLancamentos: number;
   usuarioRegistro: Usuario | null;
   usuarioAprovacao: Usuario | null;
   situacao: SituacaoLote;
   dataEntrada: string;
   dataHoraSituacao: string;
+  // valor/quantidadeLancamentos não vêm mais prontos do backend (spec
+  // 0005) — sempre calculados a partir de `lancamentos`, ver
+  // calcularValorLote()/calcularQuantidadeLancamentos() abaixo.
+  lancamentos: Lancamento[];
 }
 
-export interface LoteDetalhe extends Lote {
-  lancamentos: Lancamento[];
+/** @deprecated Lote já tem `lancamentos`; era usado quando só o detalhe trazia. */
+export type LoteDetalhe = Lote;
+
+/** Somatório do valor dos lançamentos do lote. */
+export function calcularValorLote(lote: Pick<Lote, 'lancamentos'>): number {
+  return lote.lancamentos.reduce((soma, l) => soma + l.valor, 0);
+}
+
+/** Quantidade de lançamentos do lote. */
+export function calcularQuantidadeLancamentos(lote: Pick<Lote, 'lancamentos'>): number {
+  return lote.lancamentos.length;
 }
 
 export interface FiltroLote {

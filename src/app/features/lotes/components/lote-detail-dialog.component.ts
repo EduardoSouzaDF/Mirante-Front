@@ -1,6 +1,10 @@
 import { Component, effect, inject, input, output, signal } from '@angular/core';
 
-import { LoteDetalhe } from '../../../core/models/lote.model';
+import {
+  LoteDetalhe,
+  calcularQuantidadeLancamentos,
+  calcularValorLote,
+} from '../../../core/models/lote.model';
 import { LoteFacade } from '../../../core/services/lote.facade';
 import { CurrencyBRLPipe } from '../../../shared/pipes/currency.pipe';
 import { DateBrPipe } from '../../../shared/pipes/date.pipe';
@@ -28,6 +32,9 @@ export class LoteDetailDialogComponent {
 
   readonly lote = signal<LoteDetalhe | null>(null);
   readonly carregando = signal(false);
+
+  protected readonly calcularValorLote = calcularValorLote;
+  protected readonly calcularQuantidadeLancamentos = calcularQuantidadeLancamentos;
 
   constructor() {
     effect(() => {
