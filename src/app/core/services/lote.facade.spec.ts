@@ -12,13 +12,23 @@ const LOTE_MOCK: Lote = {
   id: 1,
   resp: { id: '0001', nome: '0001 - SICOOB' },
   instituicao: { id: '0001', nome: '0001 - SICOOB' },
-  valor: 100,
-  quantidadeLancamentos: 1,
   usuarioRegistro: { id: 'u-001', nome: 'gearqc0300_00' },
   usuarioAprovacao: null,
   situacao: 'Aberto',
   dataEntrada: '2026-04-20',
   dataHoraSituacao: '2026-04-20T10:00:00',
+  lancamentos: [
+    {
+      id: 1,
+      contaCorrenteId: 1,
+      valor: 100,
+      historico: 'Lançamento Manual',
+      estorno: false,
+      documentos: [{ id: 1, nome: 'doc.pdf', pathUrl: '/mock-files/doc.pdf' }],
+      descricao: '',
+      situacao: 'Confirmado',
+    },
+  ],
 };
 
 const PAGINA_MOCK: PaginatedResponse<Lote> = {
@@ -109,5 +119,30 @@ describe('LoteFacade', () => {
     const req = httpMock.expectOne('/api/lotes/justificativa');
     expect(req.request.body).toEqual({ ids: [7] });
     req.flush({ message: 'OK (placeholder)' });
+  });
+
+  it('buscarContaCorrente() chama GET /api/contas-correntes com o número', () => {
+    facade.buscarContaCorrente('300031').subscribe();
+    const req = httpMock.expectOne(
+      (r) => r.url === '/api/contas-correntes' && r.params.get('numero') === '300031',
+    );
+    expect(req.request.method).toBe('GET');
+    req.flush({ conta: { id: 4, agencia: 3, conta: 300031, instituicaoId: '0003' }, instituicao: { id: '0003', nome: '0003 - SICOOB NORTE' } });
+  });
+
+  it('incluirLancamento() chama POST /api/lancamentos com o payload', () => {
+    const payload = {
+      contaCorrenteId: 4,
+      valor: 100,
+      historico: 'Lançamento Manual' as const,
+      estorno: false,
+      documentos: [{ nome: 'doc.pdf' }],
+      descricao: '',
+    };
+    facade.incluirLancamento(payload).subscribe();
+    const req = httpMock.expectOne('/api/lancamentos');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(payload);
+    req.flush(LOTE_MOCK);
   });
 });

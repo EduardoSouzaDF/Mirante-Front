@@ -15,8 +15,8 @@
       <div class="lote-dialog__grid">
         <div><span class="lote-dialog__label">Instituição Resp.</span>{{ l.resp?.nome ?? '-' }}</div>
         <div><span class="lote-dialog__label">Instituição</span>{{ l.instituicao?.nome ?? '-' }}</div>
-        <div><span class="lote-dialog__label">Valor</span>{{ l.valor | brl }}</div>
-        <div><span class="lote-dialog__label">Quant. Lançamentos</span>{{ l.quantidadeLancamentos }}</div>
+        <div><span class="lote-dialog__label">Valor</span>{{ calcularValorLote(l) | brl }}</div>
+        <div><span class="lote-dialog__label">Quant. Lançamentos</span>{{ calcularQuantidadeLancamentos(l) }}</div>
         <div><span class="lote-dialog__label">Usuário Registro</span>{{ l.usuarioRegistro?.nome ?? '-' }}</div>
         <div><span class="lote-dialog__label">Usuário Aprovação</span>{{ l.usuarioAprovacao?.nome ?? '-' }}</div>
         <div><span class="lote-dialog__label">Situação</span>{{ l.situacao }}</div>

@@ -77,8 +77,8 @@
     <ng-template #row let-lote>
       <td>{{ lote.id }}</td>
       <td>{{ lote.dataEntrada | dataBr }}</td>
-      <td>{{ lote.valor | brl }}</td>
-      <td>{{ lote.quantidadeLancamentos }}</td>
+      <td>{{ calcularValorLote(lote) | brl }}</td>
+      <td>{{ calcularQuantidadeLancamentos(lote) }}</td>
       <td>{{ lote.usuarioRegistro?.nome ?? '-' }}</td>
       <td>{{ lote.usuarioAprovacao?.nome ?? '-' }}</td>
       <td>
@@ -106,5 +106,10 @@
     [mostrarTodos]="mostrarOpcaoTodos()"
     (escolha)="onEscopoEscolhido($event)"
     (cancelado)="onEscopoCancelado()"
+  />
+
+  <app-incluir-lancamento-dialog
+    [visible]="incluirModalVisivel()"
+    (closed)="onFecharIncluirModal()"
   />
 </section>
