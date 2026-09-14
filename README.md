@@ -28,6 +28,13 @@ npm install
 ng serve
 ```
 
+## Usuário de teste
+
+| nome | email | senha |
+|---|---|---|
+| Administrador | admin@mirante.com.br | 123456 |
+
+
 A aplicação sobe em `http://localhost:4200`. Chamadas a `/api/**` são
 redirecionadas para o mock server em `http://localhost:3100` (configuração em
 `proxy.conf.json`). Para o proxy funcionar, o backend mock precisa estar
