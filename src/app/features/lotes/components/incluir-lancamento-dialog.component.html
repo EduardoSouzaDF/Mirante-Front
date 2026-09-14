@@ -45,11 +45,11 @@
             Valor <span class="incluir-dialog__obrigatorio">*</span>
           </label>
           <input
-            type="number"
-            step="0.01"
-            min="0.01"
-            formControlName="valor"
-            (blur)="form.controls.valor.markAsTouched()"
+            type="text"
+            inputmode="numeric"
+            placeholder="R$ 0,00"
+            [value]="valorExibicao()"
+            (input)="onValorInput($event)"
           />
           @if (form.controls.valor.invalid && form.controls.valor.touched) {
             <span class="incluir-dialog__erro">

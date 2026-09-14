@@ -53,6 +53,26 @@ describe('IncluirLancamentoDialogComponent', () => {
     expect(component.contaEncontrada()).toBeNull();
   });
 
+  it('onValorInput() aplica máscara BRL e preenche o valor numérico do form', () => {
+    const input = document.createElement('input');
+    input.value = '150000';
+    component.onValorInput({ target: input } as unknown as Event);
+
+    expect(input.value.replace(/ /g, ' ')).toBe('R$ 1.500,00');
+    expect(component.form.controls.valor.value).toBe(1500);
+  });
+
+  it('onValorInput() não deixa caractere inválido grudado (regressão, mesmo bug do RangeField)', () => {
+    const input = document.createElement('input');
+    input.value = '150000';
+    component.onValorInput({ target: input } as unknown as Event);
+
+    input.value = input.value + 'x';
+    component.onValorInput({ target: input } as unknown as Event);
+
+    expect(input.value).not.toContain('x');
+  });
+
   it('formulário fica válido só depois de preencher todos os obrigatórios', () => {
     component.form.patchValue({ contaCorrenteId: 4, valor: 100, historico: 'Lançamento Manual' });
     expect(component.form.invalid).toBeTrue(); // falta documento

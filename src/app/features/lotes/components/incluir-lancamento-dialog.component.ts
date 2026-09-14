@@ -10,6 +10,7 @@ import { ContaCorrenteBusca } from '../../../core/models/conta-corrente.model';
 import { HISTORICOS_DISPONIVEIS, Lancamento } from '../../../core/models/lancamento.model';
 import { LoteFacade } from '../../../core/services/lote.facade';
 import { CurrencyBRLPipe } from '../../../shared/pipes/currency.pipe';
+import { processarMascaraMoeda } from '../../../shared/utils/mascara-moeda.util';
 
 /** Validador: precisa de ao menos 1 arquivo anexado. */
 function aoMenosUmArquivo(control: { value: unknown[] }): ValidationErrors | null {
@@ -54,6 +55,9 @@ export class IncluirLancamentoDialogComponent {
   readonly documentos = signal<{ nome: string }[]>([]);
   readonly arrastandoArquivo = signal(false);
 
+  // Valor com a mesma máscara BRL do filtro "Valor Lote" (RangeFieldComponent).
+  readonly valorExibicao = signal('');
+
   readonly form = this.fb.group({
     contaCorrenteId: this.fb.control<number | null>(null, Validators.required),
     valor: this.fb.control<number | null>(null, [Validators.required, Validators.min(0.01)]),
@@ -77,6 +81,18 @@ export class IncluirLancamentoDialogComponent {
     this.contaEncontrada.set(encontrada ?? null);
     this.form.patchValue({ contaCorrenteId: encontrada ? encontrada.conta.id : null });
     this.form.controls.contaCorrenteId.markAsTouched();
+  }
+
+  onValorInput(evento: Event): void {
+    const input = evento.target as HTMLInputElement;
+    const { exibicao, valor } = processarMascaraMoeda(input.value);
+    // Escreve direto no elemento (mesmo motivo do RangeFieldComponent): se
+    // o texto sanitizado não mudar, o binding [value] sozinho não
+    // reescreveria o DOM e uma letra digitada ficaria "colada" no campo.
+    input.value = exibicao;
+    this.valorExibicao.set(exibicao);
+    this.form.controls.valor.setValue(valor);
+    this.form.controls.valor.markAsTouched();
   }
 
   onArquivosSelecionados(evento: Event): void {
@@ -138,6 +154,7 @@ export class IncluirLancamentoDialogComponent {
   fechar(): void {
     this.contaTexto.setValue('');
     this.contaEncontrada.set(null);
+    this.valorExibicao.set('');
     this.documentos.set([]);
     this.lancamentosIncluidos.set([]);
     this.form.reset({
@@ -169,6 +186,7 @@ export class IncluirLancamentoDialogComponent {
 
   private resetarFormularioNovoLancamento(): void {
     this.documentos.set([]);
+    this.valorExibicao.set('');
     this.form.patchValue({
       valor: null,
       historico: '',
