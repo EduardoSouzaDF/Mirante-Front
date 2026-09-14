@@ -57,11 +57,14 @@ describe('LotesPageComponent', () => {
     fixture.detectChanges();
 
     // Requisições disparadas ao criar o componente: carregarFiltros() no
-    // construtor + a busca inicial automática ao assinar lotes$/total$.
+    // construtor + a busca inicial automática ao assinar lotes$/total$ +
+    // a lista de contas correntes carregada pelo IncluirLancamentoDialogComponent
+    // (sempre no template, só escondido via [visible]).
     httpMock
       .expectOne((r) => r.url.startsWith('/api/filtros/lotes'))
       .flush({ instituicoes: [], instituicoesResponsaveis: [], situacoes: [] });
     httpMock.expectOne((r) => r.url.startsWith('/api/lotes')).flush(RESULTADO_VAZIO);
+    httpMock.expectOne('/api/contas-correntes').flush({ contas: [] });
   });
 
   afterEach(() => httpMock.verify());

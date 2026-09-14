@@ -17,27 +17,26 @@
             Conta Corrente <span class="incluir-dialog__obrigatorio">*</span>
           </label>
           <div class="incluir-dialog__busca">
+            <i class="pi pi-search incluir-dialog__lupaIcone"></i>
             <input
               type="text"
-              [formControl]="numeroConta"
-              placeholder="Número da conta"
-              (keydown.enter)="$event.preventDefault(); buscarConta()"
+              [formControl]="contaTexto"
+              list="incluir-dialog-contas"
+              placeholder="Pesquisar conta corrente…"
+              (input)="onContaTextoChange()"
+              (change)="onContaTextoChange()"
             />
-            <button type="button" class="incluir-dialog__lupa" (click)="buscarConta()" aria-label="Buscar conta">
-              <i class="pi pi-search"></i>
-            </button>
-            @if (contaEncontrada(); as resultado) {
-              <span class="incluir-dialog__titular">{{ resultado.instituicao?.nome }}</span>
-            }
+            <datalist id="incluir-dialog-contas">
+              @for (item of opcoesContas(); track item.conta.id) {
+                <option [value]="rotuloContaCorrente(item)"></option>
+              }
+            </datalist>
           </div>
-          @if (buscandoConta()) {
-            <span class="incluir-dialog__ajuda">Buscando…</span>
-          }
-          @if (erroConta()) {
-            <span class="incluir-dialog__erro">{{ erroConta() }}</span>
+          @if (contaEncontrada(); as resultado) {
+            <span class="incluir-dialog__titular">Titular: {{ resultado.instituicao?.nome }}</span>
           }
           @if (form.controls.contaCorrenteId.invalid && form.controls.contaCorrenteId.touched) {
-            <span class="incluir-dialog__erro">Localize uma conta corrente válida.</span>
+            <span class="incluir-dialog__erro">Selecione uma conta corrente válida da lista.</span>
           }
         </div>
 
@@ -89,7 +88,17 @@
           <label class="incluir-dialog__label">
             Documento <span class="incluir-dialog__obrigatorio">*</span>
           </label>
-          <input type="file" multiple (change)="onArquivosSelecionados($event)" />
+          <label
+            class="incluir-dialog__dropzone"
+            [class.incluir-dialog__dropzone--ativo]="arrastandoArquivo()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)"
+          >
+            <i class="pi pi-cloud-upload"></i>
+            <span>Arraste arquivos aqui ou clique para selecionar</span>
+            <input type="file" multiple (change)="onArquivosSelecionados($event)" hidden />
+          </label>
           @if (documentos().length) {
             <ul class="incluir-dialog__arquivos">
               @for (doc of documentos(); track doc.nome; let i = $index) {

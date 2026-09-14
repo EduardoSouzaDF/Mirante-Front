@@ -7,6 +7,11 @@ import { provideHttpClient } from '@angular/common/http';
 
 import { IncluirLancamentoDialogComponent } from './incluir-lancamento-dialog.component';
 
+const CONTA_MOCK = {
+  conta: { id: 4, agencia: 3, conta: 300031, instituicaoId: '0003' },
+  instituicao: { id: '0003', nome: '0003 - SICOOB NORTE' },
+};
+
 describe('IncluirLancamentoDialogComponent', () => {
   let fixture: ComponentFixture<IncluirLancamentoDialogComponent>;
   let component: IncluirLancamentoDialogComponent;
@@ -21,6 +26,9 @@ describe('IncluirLancamentoDialogComponent', () => {
     httpMock = TestBed.inject(HttpTestingController);
     fixture.componentRef.setInput('visible', true);
     fixture.detectChanges();
+
+    // Constructor carrega a lista de contas correntes (select pesquisável).
+    httpMock.expectOne('/api/contas-correntes').flush({ contas: [CONTA_MOCK] });
   });
 
   afterEach(() => httpMock.verify());
@@ -29,31 +37,20 @@ describe('IncluirLancamentoDialogComponent', () => {
     expect(component.form.invalid).toBeTrue();
   });
 
-  it('buscarConta() encontra a conta e preenche contaCorrenteId', () => {
-    component.numeroConta.setValue('300031');
-    component.buscarConta();
-
-    const req = httpMock.expectOne(
-      (r) => r.url === '/api/contas-correntes' && r.params.get('numero') === '300031',
-    );
-    req.flush({
-      conta: { id: 4, agencia: 3, conta: 300031, instituicaoId: '0003' },
-      instituicao: { id: '0003', nome: '0003 - SICOOB NORTE' },
-    });
+  it('onContaTextoChange() com o rótulo exato preenche contaCorrenteId', () => {
+    component.contaTexto.setValue(component.rotuloContaCorrente(CONTA_MOCK as any));
+    component.onContaTextoChange();
 
     expect(component.form.controls.contaCorrenteId.value).toBe(4);
     expect(component.contaEncontrada()?.instituicao?.nome).toBe('0003 - SICOOB NORTE');
   });
 
-  it('buscarConta() sem encontrar mostra erro e não preenche o id', () => {
-    component.numeroConta.setValue('000000');
-    component.buscarConta();
-
-    const req = httpMock.expectOne((r) => r.url === '/api/contas-correntes');
-    req.flush({ message: 'não encontrada' }, { status: 404, statusText: 'Not Found' });
+  it('onContaTextoChange() com texto que não bate com nenhuma opção não preenche o id', () => {
+    component.contaTexto.setValue('texto qualquer que não existe na lista');
+    component.onContaTextoChange();
 
     expect(component.form.controls.contaCorrenteId.value).toBeNull();
-    expect(component.erroConta()).toBeTruthy();
+    expect(component.contaEncontrada()).toBeNull();
   });
 
   it('formulário fica válido só depois de preencher todos os obrigatórios', () => {
@@ -98,9 +95,11 @@ describe('IncluirLancamentoDialogComponent', () => {
       ],
     });
 
-    // recarregarSubject dispara um refresh da listagem em algum lugar do
-    // facade compartilhado — não relevante aqui, então drena se existir.
-    httpMock.match(() => true).forEach((r) => r.flush({ data: [], total: 0, page: 1, size: 10, hasNext: false, hasPrevious: false }));
+    // confirmar() dispara recarregarSubject do facade compartilhado, que
+    // pode ter (ou não) um assinante de /api/lotes ativo — drena se existir.
+    httpMock
+      .match(() => true)
+      .forEach((r) => r.flush({ data: [], total: 0, page: 1, size: 10, hasNext: false, hasPrevious: false }));
 
     expect(component.lancamentosIncluidos().length).toBe(1);
     expect(component.lancamentosIncluidos()[0].id).toBe(99);

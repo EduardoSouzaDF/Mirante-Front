@@ -163,6 +163,13 @@ export class LoteFacade {
     });
   }
 
+  /** Lista todas as contas correntes (pro select pesquisável de Incluir Lançamento). */
+  listarContasCorrentes(): Observable<ContaCorrenteBusca[]> {
+    return this.http
+      .get<{ contas: ContaCorrenteBusca[] }>('/api/contas-correntes')
+      .pipe(map((r) => r.contas));
+  }
+
   /** Cria o lançamento e o lote novo (Aberto) para a instituição da conta. */
   incluirLancamento(payload: IncluirLancamentoPayload): Observable<Lote> {
     return this.http

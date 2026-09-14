@@ -1,11 +1,11 @@
+import { Instituicao } from './conta-corrente.model';
 import { Lancamento } from './lancamento.model';
 
-export type SituacaoLote = 'Aberto' | 'Confirmado' | 'Enviado';
+// Reexportado por compatibilidade — Instituicao agora mora em
+// conta-corrente.model.ts porque referencia ContaCorrente.
+export type { Instituicao };
 
-export interface Instituicao {
-  id: string;
-  nome: string;
-}
+export type SituacaoLote = 'Aberto' | 'Confirmado' | 'Enviado';
 
 export interface Usuario {
   id: string;

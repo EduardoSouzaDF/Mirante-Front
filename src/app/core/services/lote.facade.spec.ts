@@ -130,6 +130,21 @@ describe('LoteFacade', () => {
     req.flush({ conta: { id: 4, agencia: 3, conta: 300031, instituicaoId: '0003' }, instituicao: { id: '0003', nome: '0003 - SICOOB NORTE' } });
   });
 
+  it('listarContasCorrentes() chama GET /api/contas-correntes sem número e devolve o array', (done) => {
+    facade.listarContasCorrentes().subscribe((contas) => {
+      expect(contas.length).toBe(1);
+      expect(contas[0].conta.id).toBe(4);
+      done();
+    });
+    const req = httpMock.expectOne('/api/contas-correntes');
+    expect(req.request.params.has('numero')).toBeFalse();
+    req.flush({
+      contas: [
+        { conta: { id: 4, agencia: 3, conta: 300031, instituicaoId: '0003' }, instituicao: { id: '0003', nome: '0003 - SICOOB NORTE' } },
+      ],
+    });
+  });
+
   it('incluirLancamento() chama POST /api/lancamentos com o payload', () => {
     const payload = {
       contaCorrenteId: 4,
